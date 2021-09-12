@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import UsuarioForm from './UsuarioForm';
+import RecolhaForm from './Alocar_operarioForm';
 import PageHeader from '../../components/PageHeader'
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import useTable from '../../components/useTable'
 import PeopleOutlineTwoToneIcon from '@material-ui/icons/PeopleOutlineTwoTone';
 import { InputAdornment, InputLabel, makeStyles, Paper, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
+import * as recolhaservices from '../../services/recolhaservices'
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/Popup'
 import api from '../../services/api';
-import * as usuariosercices from '../../services/usuarioservices'
+
+import * as alocar_operario_services from '../../services/alocar_operarioservices'
 import DeleteIcon from '@material-ui/icons/DeleteSharp';
 import EditIcon from '@material-ui/icons/Edit';
 
@@ -28,58 +30,55 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 const headersCells = [
-    { id: 'pk_id_usuarioc', label: 'ID' },     
-    { id: 'fullname', label: 'Name' },   
-    { id: 'email', label: 'Email' },
-    { id: 'nivel', label: 'User Type' },
-    { id: 'state', label: 'State' },
+    { id: 'pk_id_operario_linha', label: 'ID' },
+    { id: 'fk_id_operario', label: 'Nome Operario' },    
+    { id: 'fk_id_cutsheet', label: 'Cutsheet' },
+    { id: 'mobile', label: 'Sector' },
+    { id: 'email', label: 'Linha' },
+    { id: 'fk_id_operacao', label: 'Operacao' },
     { id: 'actions', label: 'Actions', desableSorting: true },
 ]
-export default function User() {
+export default function Recolha() {
     const classes = useStyles()
-    const [recordForEdit, setrecordForEdit] = useState([]);
+    const [recordForEdit, setrecordForEdit] = useState(null);
+    
+    const [cutsheet, setcutsheet] = useState([]); //vindo da BD
+    const [records, setRecords] = useState([]);
     const [filtterFn, setFiltterFn] = useState({ fn: items => { return items } });
     const [openPopup, setopenPopup] = useState(false);
-    const [usuarios, setUsuarios] = useState([]); //vindo da BD
-    //const histry =  useHistory();
-    const [records, setRecords] = useState(null);
 
     useEffect(() => {
-        async function loadUsuarios() {
-            const res = await api.get('/usuario/listar_usuario');
-            setUsuarios(res.data)
+        async function loadcutsheet() {
+            const res = await api.get('alocar_operario/listar_alocar_operario');
+            setcutsheet(res.data)
         }
-        loadUsuarios();
+        loadcutsheet();
     }, [])
 
     useEffect(() => {
-        if (usuarios?.length > 0) {
-            setRecords(usuarios)
+        if (cutsheet?.length > 0) {
+            setRecords(cutsheet)
         }
 
-    }, [usuarios])
-
+    }, [cutsheet])
 
     const {
         TblContainer,
         TblHead,
         TblPaginition,
         recordsAfterPagingAndSorting
-    } = useTable(records?.length > 0 && records, headersCells, filtterFn)
+    } = useTable(records, headersCells, filtterFn)
 
-    const addOrEdit = (usuario, resetForm) => {
 
-        if (usuario.pk_id_usuarioc > 0) {
 
-            usuariosercices.updateusuario(usuario)
+    const addOrEdit = (employees, resetForm) => {
+       alert(employees.pk_id_operario_linha )
+        if (employees.pk_id_operario_linha == 0) 
+          alocar_operario_services.insertAlocacao(employees)
 
-        } else {
-
-            usuariosercices.insertusuario(usuario)
-        }
         resetForm(); //Limpa o formulario
-        setopenPopup(false); // Fecha o Modal        
-        window.location.href = '/admin/usuario/usuarioMoztex'
+        setopenPopup(false); // Fecha o Modal
+        setRecords(recolhaservices.getAllEmployees()) //Actualiza a tabela com os dados inseridos
     }
     const handleSearch = e => {
         let target = e.target;
@@ -98,24 +97,20 @@ export default function User() {
         setrecordForEdit(item);
         setopenPopup(true);
     }
-
-    const deleteUserByID = id => { //Responsavel por Passar o ID a ser deletados
-        usuariosercices.deleteUser(id)
-    }
     return (
         <>
             <PageHeader
-                tittle="Usuario MOZETEX"
-                subtittle="Formulario com Validacao, para a adicao de novas Usuarios do Sistema. Pode Procurar os Funcionarios pelos seus Nomes com letras minusculas"
+                tittle="New Recolha"
+                subtittle="Form with Validations"
                 icon={<PeopleOutlineTwoToneIcon fontSize="large" />}
             />
             <Paper className={classes.pageContent}>
-                {/*<UsuarioForm    />*/}
+                {/*<RecolhaForm    />*/}
                 <Toolbar>
                     <Controls.Input
                         className={classes.SearchInput}
                         name="search"
-                        label="Buscar Usuarios pelo Nome"
+                        label="Busca de Cutsheet"
                         InputProps={{
                             startAdornment: (<InputAdornment position="start">
                                 <SearchIcon />
@@ -127,7 +122,7 @@ export default function User() {
 
                     </Controls.Input>
                     <Controls.Button
-                        text="Adicinar Novo"
+                        text="Alocar"
                         variant="outlined"
                         startIcon={<AddIcon />}
                         className={classes.newButton}
@@ -139,13 +134,14 @@ export default function User() {
                     <TblHead />
                     <TableBody>
                         {
-                            recordsAfterPagingAndSorting()?.map(item =>
-                            (<TableRow key={item.pk_id_usuarioc}>
-                                <TableCell> {item.pk_id_usuarioc} </TableCell>
-                                <TableCell> {item.fullname} </TableCell>                                
-                                <TableCell> {item.email} </TableCell>
-                                <TableCell> {item.nivel} </TableCell>
-                                <TableCell> {item.state} </TableCell>
+                            recordsAfterPagingAndSorting().map(item =>
+                            (<TableRow key={item.pk_id_operario_linha}>
+                                <TableCell> {item.pk_id_operario_linha} </TableCell>                                
+                                <TableCell> {item.nome_operario} </TableCell>                                                             
+                                <TableCell> {item.codigo_cutsheet} </TableCell>
+                                <TableCell> {item.nome_sector} </TableCell>
+                                <TableCell> {item.nr_linha} </TableCell>
+                                <TableCell> {item.nome_operacao} </TableCell>   
                                 <TableCell>
 
                                     <Controls.ActionButton
@@ -153,16 +149,14 @@ export default function User() {
                                     >
                                         <EditIcon fontSize="small"
                                             onClick={() => openInPopupEdit(item)}
-                                        />Editar
+                                        />
                                     </Controls.ActionButton>
                                     <Controls.ActionButton
                                         color="secondary"
                                     >
-                                        <DeleteIcon
-                                            fontSize="small"
-                                            onClick={() => deleteUserByID(item)}
-                                        />Apagar
+                                        <DeleteIcon fontSize="small" />
                                     </Controls.ActionButton>
+
 
                                 </TableCell>
                             </TableRow>)
@@ -173,11 +167,11 @@ export default function User() {
                 <TblPaginition />
             </Paper>
             <Popup
-                tittle="Formulario de Cadastro de Usarios"
+                tittle="Formulario de Alocacao de Funcionarios"
                 openPopup={openPopup}
                 setOpenPopup={setopenPopup}
             >
-                <UsuarioForm
+                <RecolhaForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit} />
             </Popup>

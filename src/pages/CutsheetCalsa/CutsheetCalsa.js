@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import UsuarioForm from './UsuarioForm';
+import CutsheetCalsaForm from './CutsheetCalsaForm';
 import PageHeader from '../../components/PageHeader'
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import useTable from '../../components/useTable'
-import PeopleOutlineTwoToneIcon from '@material-ui/icons/PeopleOutlineTwoTone';
+import PeopleOutlineTwoToneIcon from '@material-ui/icons/TabSharp';
 import { InputAdornment, InputLabel, makeStyles, Paper, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/Popup'
 import api from '../../services/api';
-import * as usuariosercices from '../../services/usuarioservices'
+import * as cutsheetCalsaservices from '../../services/cutsheetCalsaservices'
 import DeleteIcon from '@material-ui/icons/DeleteSharp';
 import EditIcon from '@material-ui/icons/Edit';
 
@@ -28,11 +28,16 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 const headersCells = [
-    { id: 'pk_id_usuarioc', label: 'ID' },     
-    { id: 'fullname', label: 'Name' },   
-    { id: 'email', label: 'Email' },
-    { id: 'nivel', label: 'User Type' },
-    { id: 'state', label: 'State' },
+    { id: 'pk_id_cutsheet', label: 'ID' },
+    { id: 'codigo_cutsheet', label: 'Cutsheet' },
+    { id: 'cod_tecido1', label: 'Fabric' },
+    { id: 'tipo_peca', label: 'Item' },
+    { id: 'quantidade_peca', label: 'Quantity Item' },
+    { id: 'metragem_tecido', label: 'Fabric Qty' },
+    { id: 'cod_intertela1', label: 'Intertela' },
+    { id: 'tipo_etiqueta', label: 'Labels' },
+    { id: 'cor', label: 'Color' },
+    { id: 'cor', label: 'Pointer' },
     { id: 'actions', label: 'Actions', desableSorting: true },
 ]
 export default function User() {
@@ -46,7 +51,7 @@ export default function User() {
 
     useEffect(() => {
         async function loadUsuarios() {
-            const res = await api.get('/usuario/listar_usuario');
+            const res = await api.get('/cutsheetCalsa/listar_cutsheetCalsa');
             setUsuarios(res.data)
         }
         loadUsuarios();
@@ -67,19 +72,19 @@ export default function User() {
         recordsAfterPagingAndSorting
     } = useTable(records?.length > 0 && records, headersCells, filtterFn)
 
-    const addOrEdit = (usuario, resetForm) => {
-
-        if (usuario.pk_id_usuarioc > 0) {
-
-            usuariosercices.updateusuario(usuario)
-
+    const addOrEdit = (employees, resetForm) => {
+        if (employees.id_cutsheet == 0) {
+            cutsheetCalsaservices.updatecutsheetCalsa(employees)
+            
+       
         } else {
-
-            usuariosercices.insertusuario(usuario)
+           cutsheetCalsaservices.insertcutsheetCalsa(employees)
         }
+
         resetForm(); //Limpa o formulario
-        setopenPopup(false); // Fecha o Modal        
-        window.location.href = '/admin/usuario/usuarioMoztex'
+        setopenPopup(false); // Fecha o Modal    
+        
+        window.location.href = '/admin/usuario/cutsheetCalsamoztex'    
     }
     const handleSearch = e => {
         let target = e.target;
@@ -89,7 +94,7 @@ export default function User() {
                     return items
                 }
                 else {
-                    return items.filter(x => x.fullname.toLowerCase().includes(target.value))
+                    return items.filter(x => x.codigo_cutsheet.toLowerCase().includes(target.value))
                 }
             }
         })
@@ -100,22 +105,22 @@ export default function User() {
     }
 
     const deleteUserByID = id => { //Responsavel por Passar o ID a ser deletados
-        usuariosercices.deleteUser(id)
+        cutsheetCalsaservices.deletecutsheetCalsa(id)
     }
     return (
         <>
             <PageHeader
-                tittle="Usuario MOZETEX"
-                subtittle="Formulario com Validacao, para a adicao de novas Usuarios do Sistema. Pode Procurar os Funcionarios pelos seus Nomes com letras minusculas"
+                tittle="Cutsheets Para Calsas"
+                subtittle="Formulario com Validacao, para a adicao de novas cutsheets"
                 icon={<PeopleOutlineTwoToneIcon fontSize="large" />}
             />
             <Paper className={classes.pageContent}>
-                {/*<UsuarioForm    />*/}
+                {/*<cutsheetCalsa    />*/}
                 <Toolbar>
                     <Controls.Input
                         className={classes.SearchInput}
                         name="search"
-                        label="Buscar Usuarios pelo Nome"
+                        label="Search User"
                         InputProps={{
                             startAdornment: (<InputAdornment position="start">
                                 <SearchIcon />
@@ -127,7 +132,7 @@ export default function User() {
 
                     </Controls.Input>
                     <Controls.Button
-                        text="Adicinar Novo"
+                        text="Novo Cutsheet"
                         variant="outlined"
                         startIcon={<AddIcon />}
                         className={classes.newButton}
@@ -140,20 +145,24 @@ export default function User() {
                     <TableBody>
                         {
                             recordsAfterPagingAndSorting()?.map(item =>
-                            (<TableRow key={item.pk_id_usuarioc}>
-                                <TableCell> {item.pk_id_usuarioc} </TableCell>
-                                <TableCell> {item.fullname} </TableCell>                                
-                                <TableCell> {item.email} </TableCell>
-                                <TableCell> {item.nivel} </TableCell>
-                                <TableCell> {item.state} </TableCell>
+                            (<TableRow key={item.pk_id_cutsheet}>
+                                <TableCell> {item.pk_id_cutsheet} </TableCell>
+                                <TableCell> {item.codigo_cutsheet} </TableCell>
+                                <TableCell> {item.cod_tecido1+ "/" +item.cod_tecido2} </TableCell>
+                                <TableCell> {item.tipo_peca + " " + item.especifidade_peca} </TableCell>
+                                <TableCell> {item.quantidade_peca} </TableCell>
+                                <TableCell> {item.metragem_tecido} </TableCell>
+                                <TableCell> {item.cod_intertela1+ "/" +item.cod_intertela2} </TableCell>
+                                <TableCell> {item.tipo_etiqueta} </TableCell>
+                                <TableCell> {item.cor} </TableCell>
+                                <TableCell> {item.nome_funcionario} </TableCell>
                                 <TableCell>
-
                                     <Controls.ActionButton
                                         color="primary"
                                     >
                                         <EditIcon fontSize="small"
                                             onClick={() => openInPopupEdit(item)}
-                                        />Editar
+                                        />
                                     </Controls.ActionButton>
                                     <Controls.ActionButton
                                         color="secondary"
@@ -161,7 +170,7 @@ export default function User() {
                                         <DeleteIcon
                                             fontSize="small"
                                             onClick={() => deleteUserByID(item)}
-                                        />Apagar
+                                        />
                                     </Controls.ActionButton>
 
                                 </TableCell>
@@ -170,14 +179,16 @@ export default function User() {
                         }
                     </TableBody>
                 </TblContainer>
+                <h href="usuario/admin">Cutsheet Calsas</h>
                 <TblPaginition />
+
             </Paper>
             <Popup
-                tittle="Formulario de Cadastro de Usarios"
+                tittle="Trouser Cutsheet  Form"
                 openPopup={openPopup}
                 setOpenPopup={setopenPopup}
             >
-                <UsuarioForm
+                <CutsheetCalsaForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit} />
             </Popup>

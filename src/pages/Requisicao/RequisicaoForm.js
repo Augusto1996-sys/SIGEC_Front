@@ -22,7 +22,6 @@ const big = stateChoice;
 const initialFormValues = {
     pk_id_requisicao: 0,
     recolha: '',
-    fk_id_cutsheet:'',
     pk_id_stock: '',
     quantidade: '',
     quantidadeReuic:''
@@ -54,19 +53,81 @@ export default function UserForm(props) {
 
     const histry = useHistory();
 
-    const validate = (fieldvalues = values) =>{
+    const validate = (fieldvalues = values) => {
         //Validacao dos Campos de texto em tempo real
-        let temp = {...errors}
-        if('quantidadeReuic' in fieldvalues){         
-              temp.quantidadeReuic = fieldvalues.quantidadeReuic?"":"Coloca a quantidade que deseja Requisitar"
-        }
+        let temp = { ...errors }
+
+
+
         setErrors({
             ...temp
         })
-   /// O Values retorna a colecao que sta armazenada na variavel TEMP
-       if(fieldvalues == values)
-        return Object.values(temp).every(x => x == "")
+        /// O Values retorna a colecao que sta armazenada na variavel TEMP
+        if (fieldvalues == values)
+            return Object.values(temp).every(x => x == "")
     }
+    function getReferenciaByNome(tipo, nome) {
+        if (tipo == "Calca" && nome == "Etiqueta")
+            return requisicaoservices.getReferenciaEtiquetaCalsaCollection();
+        else if (tipo == "Camisa" && nome == "Etiqueta")
+            return requisicaoservices.getReferenciaEtiquetaCamisaCollection();
+        else if (tipo == "Camisa" && nome == "Butao")
+            return requisicaoservices.getReferenciaButaoCamisaCollection()
+        else return requisicaoservices.getSemReferenciaCollection();
+    }
+
+    function getTamanhoByNome(nome, tipo) {
+        const big = []
+        if (nome == "Zipper")
+            return requisicaoservices.getnrTamanhoZipperCollection();
+        else if (nome == "Etiqueta")
+            return requisicaoservices.getnrTamanhoEtiquetaCollection();
+        else if (nome == "Butao" && tipo == "Camisa")
+            return requisicaoservices.getnrTamanhoButaoCollection();
+        else if (nome == "Intertela Calsa")
+            return requisicaoservices.getIntertelaCalsaCollection();
+        else return []
+    }
+
+    function getCorByNome(nome, tipo, refrencia) {
+        const big = []
+        if (nome == "Zipper")
+            return requisicaoservices.getZipperCorCollection();
+        else if (nome == "Etiqueta")
+            return requisicaoservices.getCorEtiquetaCollection();
+        else if (nome == "Etiqueta")
+            return requisicaoservices.getCorEtiquetaCollection();
+        else if (nome == "Butao" && tipo == "Calsa")
+            return requisicaoservices.getCorButaoCalsaCollection();
+        else if (nome == "Butao" && tipo == "Camisa" && refrencia == "Fashion")
+            return requisicaoservices.getCorButaoFashionCollection();
+        else if (nome == "Butao" && tipo == "Camisa" && refrencia == "Humbra" || refrencia == "Express")
+            return requisicaoservices.getcorIntertelaBolso();
+        else if (nome == "Linha") return requisicaoservices.getCorLinhaCollection();
+        else return []
+    }
+    function getTipoItemFinalCollection(nome) {
+        const big = []
+        if (nome == "Zipper")
+            return requisicaoservices.getTipoFimZipperCollection();
+        else if (nome == "Etiqueta" || nome == "Butao")
+            return requisicaoservices.getTipoFimEtiquetaCollection();
+        else if (nome == "Intertela Camisa")
+            return requisicaoservices.getCorRoloIntertelaCamisaCollection();
+        else if (nome == "Intertela Calsa")
+            return requisicaoservices.getCorRoloIntertelaCalsaCollection();
+        else if (nome == "Bolso")
+            return requisicaoservices.getcorIntertelaBolso();
+        else return []
+    }
+
+    function getCod_ConeByNome(nome) {
+        if (nome == "Linha") return values.cod_cone;
+        else return "";
+
+    }
+
+
 
     //Chamando Tudo que declaramos no UseForm
     const {
@@ -99,7 +160,7 @@ export default function UserForm(props) {
             ///console.log(res.data)
             //setcutsheet = res.data
             cutsheetByreferencia = res.data.map(item => (
-                { "id": item.codigo_cutsheet, "tittle": item.codigo_cutsheet }
+                { "id": item.pk_id_cutsheet, "tittle": item.codigo_cutsheet }
             ))
             setcutsheet(cutsheetByreferencia)
         });
@@ -108,13 +169,13 @@ export default function UserForm(props) {
 
         let target = e.target;
         let stockBycutsheet = ''
-        let codigo_cutsheet = target.value;
-        values.fk_id_cutsheet = codigo_cutsheet
+        let fk_id_cutsheet = target.value;
+        values.fk_id_cutsheet = fk_id_cutsheet
         setcutsheetSelect(target.value);
-        api.post('stock/listStockBycodCutsheet', { codigo_cutsheet }).then(res => {
+        api.post('stock/listStockByCutsheet', { fk_id_cutsheet }).then(res => {
 
             stockBycutsheet = res.data.map(item => (
-                { "id": item.nome, "tittle": item.nome + '-' + item.cor_stock + ' ' + item.refencia + ' ' + item.tamanho }
+                { "id": item.pk_id_stock, "tittle": item.nome + '-' + item.cor_stock + ' ' + item.refencia + ' ' + item.tamanho }
             ))
             setstock(stockBycutsheet)
         });
@@ -194,7 +255,7 @@ export default function UserForm(props) {
                     <div>
                         <Controls.Button
                             type="submit"
-                            text="Adicionar"
+                            text="Guardar"
                         />
                         <Controls.Button
                             text="Limpar Campos"

@@ -13,7 +13,7 @@ const stateChoice = [
 ]
 
 const initialFormValues = {
-    id_users:0,
+    id_users1:0,
     email:'',
     password:'',
     state:'enable',

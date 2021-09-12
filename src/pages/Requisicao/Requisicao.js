@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import UsuarioForm from './UsuarioForm';
+import MaterialForm from './RequisicaoForm';
 import PageHeader from '../../components/PageHeader'
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
@@ -9,9 +9,11 @@ import { InputAdornment, InputLabel, makeStyles, Paper, TableBody, TableCell, Ta
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/Popup'
 import api from '../../services/api';
-import * as usuariosercices from '../../services/usuarioservices'
+import * as cutsheetsercices from '../../services/cutsheetservices'
+import * as requisicaosercices from '../../services/requisicaoservices'
 import DeleteIcon from '@material-ui/icons/DeleteSharp';
 import EditIcon from '@material-ui/icons/Edit';
+import Chip from '@material-ui/core/Chip';
 
 const useStyles = makeStyles(theme => ({
     pageContent: {
@@ -20,20 +22,28 @@ const useStyles = makeStyles(theme => ({
 
     },
     SearchInput: {
-        width: '75%'
+        width: '50%'
 
     }, newButton: {
+        width: '30%',
+        right: '0px'
+    }
+    , newButton2: {
         position: 'absolute',
-        right: '10px'
+        right: '80px'
     }
 }))
+
 const headersCells = [
-    { id: 'pk_id_usuarioc', label: 'ID' },     
-    { id: 'fullname', label: 'Name' },   
-    { id: 'email', label: 'Email' },
-    { id: 'nivel', label: 'User Type' },
-    { id: 'state', label: 'State' },
+    { id: 'pk_id_requisicao', label: 'ID' },
+    { id: 'fk_cutsheet', label: 'Cutsheet' },
+    { id: 'nome_material', label: 'Material' },
+    { id: 'fk_id_referencia', label: 'Referencia' },
+    { id: 'cor_stock', label: 'Cor' },
+    { id: 'quantidade', label: 'Quantidade' },
+    { id: 'created_at', label: 'Data' },
     { id: 'actions', label: 'Actions', desableSorting: true },
+
 ]
 export default function User() {
     const classes = useStyles()
@@ -46,7 +56,7 @@ export default function User() {
 
     useEffect(() => {
         async function loadUsuarios() {
-            const res = await api.get('/usuario/listar_usuario');
+            const res = await api.get('/requisicao/Listar_requisicao');
             setUsuarios(res.data)
         }
         loadUsuarios();
@@ -67,19 +77,37 @@ export default function User() {
         recordsAfterPagingAndSorting
     } = useTable(records?.length > 0 && records, headersCells, filtterFn)
 
-    const addOrEdit = (usuario, resetForm) => {
-
-        if (usuario.pk_id_usuarioc > 0) {
-
-            usuariosercices.updateusuario(usuario)
-
+    const addOrEdit = (employees, resetForm) => {
+        //alert(employees.pk_id_requisicao)
+        if (employees.pk_id_requisicao == 0) {
+            requisicaosercices.updaterolo(employees)
+            resetForm(); //Limpa o formulario
+            setopenPopup(false); // Fecha o Modal        
+            window.location.href = '/admin/usuario/requisicaoindex'
         } else {
-
-            usuariosercices.insertusuario(usuario)
+            if (employees.quantidade < employees.quantidadeReuic) {
+                alert("A Quantidade Que pretende nao existe no Stock! Temos "+employees.quantidade+" Unidades apenas")
+            } else {
+                requisicaosercices.insertrolo(employees)
+                resetForm(); //Limpa o formulario
+                setopenPopup(false); // Fecha o Modal        
+                window.location.href = '/admin/usuario/requisicaoindex'
+            }
         }
-        resetForm(); //Limpa o formulario
-        setopenPopup(false); // Fecha o Modal        
-        window.location.href = '/admin/usuario/usuarioMoztex'
+
+
+    }
+
+    function getDta(params){
+       const d = new Date(params)
+       const mes = 1+d.getMonth(); 
+        return(d.getDate()+"/"+mes+"/"+d.getFullYear())
+    }
+
+    function getReferenciaType(params) {
+
+        if (params == '') return "No Refrence"
+        else return params
     }
     const handleSearch = e => {
         let target = e.target;
@@ -89,7 +117,7 @@ export default function User() {
                     return items
                 }
                 else {
-                    return items.filter(x => x.fullname.toLowerCase().includes(target.value))
+                    return items.filter(x => x.nome.toLowerCase().includes(target.value))
                 }
             }
         })
@@ -98,24 +126,28 @@ export default function User() {
         setrecordForEdit(item);
         setopenPopup(true);
     }
+    function getCorQuantidade(params) {
+
+
+    }
 
     const deleteUserByID = id => { //Responsavel por Passar o ID a ser deletados
-        usuariosercices.deleteUser(id)
+        cutsheetsercices.deleteUser(id)
     }
     return (
         <>
             <PageHeader
-                tittle="Usuario MOZETEX"
-                subtittle="Formulario com Validacao, para a adicao de novas Usuarios do Sistema. Pode Procurar os Funcionarios pelos seus Nomes com letras minusculas"
+                tittle="Requisicao"
+                subtittle="Faca Aqui a Sua Requisicao! Pode Buscar As Requisicoes ja Feitas atravez da Nome do Material"
                 icon={<PeopleOutlineTwoToneIcon fontSize="large" />}
             />
             <Paper className={classes.pageContent}>
-                {/*<UsuarioForm    />*/}
+                {/*<MaterialForm    />*/}
                 <Toolbar>
                     <Controls.Input
                         className={classes.SearchInput}
                         name="search"
-                        label="Buscar Usuarios pelo Nome"
+                        label="Search User"
                         InputProps={{
                             startAdornment: (<InputAdornment position="start">
                                 <SearchIcon />
@@ -127,7 +159,7 @@ export default function User() {
 
                     </Controls.Input>
                     <Controls.Button
-                        text="Adicinar Novo"
+                        text="Nova Reqisicao "
                         variant="outlined"
                         startIcon={<AddIcon />}
                         className={classes.newButton}
@@ -140,20 +172,21 @@ export default function User() {
                     <TableBody>
                         {
                             recordsAfterPagingAndSorting()?.map(item =>
-                            (<TableRow key={item.pk_id_usuarioc}>
-                                <TableCell> {item.pk_id_usuarioc} </TableCell>
-                                <TableCell> {item.fullname} </TableCell>                                
-                                <TableCell> {item.email} </TableCell>
-                                <TableCell> {item.nivel} </TableCell>
-                                <TableCell> {item.state} </TableCell>
+                            (<TableRow key={item.pk_id_requisicao}>
+                                <TableCell> {item.pk_id_requisicao} </TableCell>
+                                <TableCell> {item.codigo_cutsheet} </TableCell>
+                                <TableCell> {item.nome} </TableCell>
+                                <TableCell> {getReferenciaType(item.refencia)} </TableCell>
+                                <TableCell> {item.cor_stock} </TableCell>
+                                <TableCell>  <Chip label={item.quantidade_req} color="primary" /></TableCell>
+                                <TableCell> {getDta(item.created_at)} </TableCell>
                                 <TableCell>
-
                                     <Controls.ActionButton
                                         color="primary"
                                     >
                                         <EditIcon fontSize="small"
                                             onClick={() => openInPopupEdit(item)}
-                                        />Editar
+                                        />
                                     </Controls.ActionButton>
                                     <Controls.ActionButton
                                         color="secondary"
@@ -161,7 +194,7 @@ export default function User() {
                                         <DeleteIcon
                                             fontSize="small"
                                             onClick={() => deleteUserByID(item)}
-                                        />Apagar
+                                        />
                                     </Controls.ActionButton>
 
                                 </TableCell>
@@ -171,13 +204,14 @@ export default function User() {
                     </TableBody>
                 </TblContainer>
                 <TblPaginition />
+
             </Paper>
             <Popup
-                tittle="Formulario de Cadastro de Usarios"
+                tittle="Formulario de Requisicao"
                 openPopup={openPopup}
                 setOpenPopup={setopenPopup}
             >
-                <UsuarioForm
+                <MaterialForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit} />
             </Popup>

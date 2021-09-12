@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import UsuarioForm from './UsuarioForm';
-import PageHeader from '../../components/PageHeader'
+import MaterialForm from './MaterialForm';
+import PageHeader from '../../../components/PageHeader'
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
-import useTable from '../../components/useTable'
+import useTable from '../../../components/useTable'
 import PeopleOutlineTwoToneIcon from '@material-ui/icons/PeopleOutlineTwoTone';
 import { InputAdornment, InputLabel, makeStyles, Paper, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
-import Controls from '../../components/controls/Controls';
-import Popup from '../../components/Popup'
-import api from '../../services/api';
-import * as usuariosercices from '../../services/usuarioservices'
+import Controls from '../../../components/controls/Controls';
+import Popup from '../../../components/Popup'
+import api from '../../../services/api';
+import * as material1services from '../../../services/material1services'
 import DeleteIcon from '@material-ui/icons/DeleteSharp';
 import EditIcon from '@material-ui/icons/Edit';
 
@@ -28,11 +28,14 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 const headersCells = [
-    { id: 'pk_id_usuarioc', label: 'ID' },     
-    { id: 'fullname', label: 'Name' },   
-    { id: 'email', label: 'Email' },
-    { id: 'nivel', label: 'User Type' },
-    { id: 'state', label: 'State' },
+    { id: 'pk_id_material', label: 'ID' },    
+    { id: 'nome', label: 'Nome' },
+    { id: 'fk_id_cutsheet', label: 'Cutsheet' },    
+    { id: 'fk_id_referencia', label: 'Referencia' },
+    { id: 'cor_material', label: 'Cor' },
+    { id: 'quantidade', label: 'Quantidade' },
+    { id: 'invoice_nr', label: 'Invoice' },
+    { id: 'created_at_material', label: 'Data Registro' },
     { id: 'actions', label: 'Actions', desableSorting: true },
 ]
 export default function User() {
@@ -46,7 +49,7 @@ export default function User() {
 
     useEffect(() => {
         async function loadUsuarios() {
-            const res = await api.get('/usuario/listar_usuario');
+            const res = await api.get('/material1/listar_material1');
             setUsuarios(res.data)
         }
         loadUsuarios();
@@ -67,20 +70,29 @@ export default function User() {
         recordsAfterPagingAndSorting
     } = useTable(records?.length > 0 && records, headersCells, filtterFn)
 
-    const addOrEdit = (usuario, resetForm) => {
-
-        if (usuario.pk_id_usuarioc > 0) {
-
-            usuariosercices.updateusuario(usuario)
-
+    const addOrEdit = (rolos, resetForm) => {
+        if (rolos.pk_id_material > 0) {
+            material1services.updaterolo(rolos)
         } else {
+            material1services.insertrolo(rolos)
 
-            usuariosercices.insertusuario(usuario)
         }
+
         resetForm(); //Limpa o formulario
         setopenPopup(false); // Fecha o Modal        
-        window.location.href = '/admin/usuario/usuarioMoztex'
+        window.location.href = '/admin/usuario/materialIndex1'
     }
+    function  getReferenciaType(params) {
+        
+        if(params == '') return "Sem Refrencia"
+        else return params 
+    }
+
+    function getDta(params){
+        const d = new Date(params)
+        const mes = 1+d.getMonth(); 
+         return(d.getDate()+"/"+mes+"/"+d.getFullYear())
+     }
     const handleSearch = e => {
         let target = e.target;
         setFiltterFn({
@@ -89,7 +101,7 @@ export default function User() {
                     return items
                 }
                 else {
-                    return items.filter(x => x.fullname.toLowerCase().includes(target.value))
+                    return items.filter(x => x.nome.toLowerCase().includes(target.value))
                 }
             }
         })
@@ -100,22 +112,22 @@ export default function User() {
     }
 
     const deleteUserByID = id => { //Responsavel por Passar o ID a ser deletados
-        usuariosercices.deleteUser(id)
+        material1services.deleteUser(id)
     }
     return (
         <>
             <PageHeader
-                tittle="Usuario MOZETEX"
-                subtittle="Formulario com Validacao, para a adicao de novas Usuarios do Sistema. Pode Procurar os Funcionarios pelos seus Nomes com letras minusculas"
+                tittle="Material"
+                subtittle="Formulario de Cadastro de Materiais! Pode Fazer a Busca Pelo Nome do Material"
                 icon={<PeopleOutlineTwoToneIcon fontSize="large" />}
             />
             <Paper className={classes.pageContent}>
-                {/*<UsuarioForm    />*/}
+                {/*<MaterialForm    />*/}
                 <Toolbar>
                     <Controls.Input
                         className={classes.SearchInput}
                         name="search"
-                        label="Buscar Usuarios pelo Nome"
+                        label="Search User"
                         InputProps={{
                             startAdornment: (<InputAdornment position="start">
                                 <SearchIcon />
@@ -127,7 +139,7 @@ export default function User() {
 
                     </Controls.Input>
                     <Controls.Button
-                        text="Adicinar Novo"
+                        text="Add New"
                         variant="outlined"
                         startIcon={<AddIcon />}
                         className={classes.newButton}
@@ -140,12 +152,15 @@ export default function User() {
                     <TableBody>
                         {
                             recordsAfterPagingAndSorting()?.map(item =>
-                            (<TableRow key={item.pk_id_usuarioc}>
-                                <TableCell> {item.pk_id_usuarioc} </TableCell>
-                                <TableCell> {item.fullname} </TableCell>                                
-                                <TableCell> {item.email} </TableCell>
-                                <TableCell> {item.nivel} </TableCell>
-                                <TableCell> {item.state} </TableCell>
+                            (<TableRow key={item.pk_id_material}>
+                                <TableCell> {item.pk_id_material} </TableCell>                                 
+                                <TableCell> {item.nome} </TableCell>           
+                                <TableCell> {item.codigo_cutsheet} </TableCell>                                                    
+                                <TableCell> {getReferenciaType(item.refencia)} </TableCell>
+                                <TableCell> {item.cor_material} </TableCell>
+                                <TableCell> {item.quantidade_material} </TableCell>
+                                <TableCell> {item.invoice_nr} </TableCell> 
+                                <TableCell> {getDta(item.created_at_material)} </TableCell>
                                 <TableCell>
 
                                     <Controls.ActionButton
@@ -153,7 +168,7 @@ export default function User() {
                                     >
                                         <EditIcon fontSize="small"
                                             onClick={() => openInPopupEdit(item)}
-                                        />Editar
+                                        />
                                     </Controls.ActionButton>
                                     <Controls.ActionButton
                                         color="secondary"
@@ -161,7 +176,7 @@ export default function User() {
                                         <DeleteIcon
                                             fontSize="small"
                                             onClick={() => deleteUserByID(item)}
-                                        />Apagar
+                                        />
                                     </Controls.ActionButton>
 
                                 </TableCell>
@@ -173,15 +188,14 @@ export default function User() {
                 <TblPaginition />
             </Paper>
             <Popup
-                tittle="Formulario de Cadastro de Usarios"
+                tittle="Rolo Form"
                 openPopup={openPopup}
                 setOpenPopup={setopenPopup}
             >
-                <UsuarioForm
+                <MaterialForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit} />
             </Popup>
         </>
     )
-
 }

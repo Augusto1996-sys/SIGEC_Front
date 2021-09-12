@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom';
 import { useForm, Form } from '../../components/useForm';
 import Controls from '../../components/controls/Controls'
-import * as cutsheetservices from '../../services/cutsheetservices'
+import * as cutsheetCalsaservices from '../../services/cutsheetCalsaservices'
 import api from '../../services/api';
 import logosistema from '../../assets/img/Rh.jpg'
 
@@ -34,15 +34,9 @@ const initialFormValues = {
     tipo_peca: '',
     quantidade_peca: '', //Comeca daqui  
     tipo_etiqueta: '',
-    style: '',
     nr_cortes: '',
     cor: '',
 
-    butao: '',
-    empacotamento: '',
-    quant_zipper: '',
-    hook_bar: '',
-    sticker_tipo: '',
     cod_cones: '',
 }
 
@@ -70,26 +64,23 @@ export default function UserForm(props) {
 
     }, [usuarios])
 
-    const validate = (fieldvalues = values) =>{
+
+
+    const validate = (fieldvalues = values) => {
         //Validacao dos Campos de texto em tempo real
-        let temp = {...errors}
-        if('fullname' in fieldvalues){         
-               temp.fullname = fieldvalues.fullname?"":"This Field is Required"
+        let temp = { ...errors }
+
+        if ('tipo_etiqueta' in fieldvalues) {
+            temp.tipo_etiqueta = fieldvalues.tipo_etiqueta.length != 0 ? "" : "Esolha o Operarios a Alocar"
         }
-        if('codigo_cutsheet' in fieldvalues){         
-               temp.codigo_cutsheet = fieldvalues.codigo_cutsheet.length>9?"":"Minimo de 5 Caracteres"
-        }
-        if('departamentId' in fieldvalues){         
-               temp.departamentId = fieldvalues.departamentId.length!=0?"":"This Field is Required"
-        }
+
         setErrors({
             ...temp
         })
-   /// O Values retorna a colecao que sta armazenada na variavel TEMP
-       if(fieldvalues == values)
-        return Object.values(temp).every(x => x == "")
+        /// O Values retorna a colecao que sta armazenada na variavel TEMP
+        if (fieldvalues == values)
+            return Object.values(temp).every(x => x == "")
     }
-    //Chamando Tudo que declaramos no UseForm
     const {
         values,
         setValues,
@@ -131,50 +122,26 @@ export default function UserForm(props) {
                         onChange={handleInputChange}
                         error={errors.codigo_cutsheet}
                     />
-                    <Controls.Input
-                        label="Metragem Total de Tecido"
-                        name="metragem_tecido"
-                        type="number"
-                        value={values.metragem_tecido}
-                        onChange={handleInputChange}
-                        error={errors.metragem_tecido}
-                    />
-                    <Controls.Input
-                        label="Codigo Principal de Tecido"
-                        name="cod_tecido1"
-                        type="number"
-                        value={values.cod_tecido1}
-                        onChange={handleInputChange}
-                        error={errors.cod_tecido1}
-                    />
-                    <Controls.Input
-                        label="Codigo Secundario de Tecido"
-                        name="cod_tecido2"
-                        type="number"
-                        value={values.cod_tecido2}
-                        onChange={handleInputChange}
-                        error={errors.cod_tecido2}
-                    />
-                    <Controls.Input
-                        label="Codigo Terciario de Tecido"
-                        name="cod_tecido3"
-                        type="number"
-                        value={values.cod_tecido3}
-                        onChange={handleInputChange}
-                        error={errors.cod_tecido3}
-                    />
 
-                </Grid>
-
-                <Grid item xs={6} >
-                    <Controls.Input
-                        label="Tipo de Artigo"
+                    <Controls.Select
+                        label="Tipo de Calsa"
                         name="tipo_peca"
-                        type="text"
                         value={values.tipo_peca}
                         onChange={handleInputChange}
+                        options={cutsheetCalsaservices.getTipoPecaCollection()}
                         error={errors.tipo_peca}
                     />
+
+
+                    <Controls.Select
+                        label="Cor do Artigo"
+                        name="cor"
+                        value={values.cor}
+                        onChange={handleInputChange}
+                        options={cutsheetCalsaservices.getCorPecaCollection()}
+                        error={errors.cor}
+                    />
+
                     <Controls.Input
                         label="Quantidade Total de Pecas"
                         name="quantidade_peca"
@@ -183,51 +150,63 @@ export default function UserForm(props) {
                         onChange={handleInputChange}
                         error={errors.quantidade_peca}
                     />
+                    <Controls.Select
+                        label="Codigo Principal de Tecido"
+                        name="cod_tecido1"
+                        value={values.cod_tecido1}
+                        onChange={handleInputChange}
+                        options={cutsheetCalsaservices.getTipoTecidoCollection()}
+                        error={errors.cod_tecido1}
+                    />
+                    <Controls.Select
+                        label="Codigo Secundario de Tecido"
+                        name="cod_tecido2"
+                        name="cod_tecido2"
+                        value={values.cod_tecido2}
+                        onChange={handleInputChange}
+                        options={cutsheetCalsaservices.getTipoTecidoCollection()}
+                        error={errors.cod_tecido2}
+                    />
+
                     <Controls.Input
+                        label="Metragem Total de Tecido"
+                        name="metragem_tecido"
+                        type="number"
+                        value={values.metragem_tecido}
+                        onChange={handleInputChange}
+                        error={errors.metragem_tecido}
+                    />
+
+                </Grid>
+
+                <Grid item xs={6} >
+
+                    <Controls.Select
                         label="Tipo de Etiqueta"
                         name="tipo_etiqueta"
-                        type="text"
                         value={values.tipo_etiqueta}
                         onChange={handleInputChange}
+                        options={cutsheetCalsaservices.getTipoEtiquetaCollection()}
                         error={errors.tipo_etiqueta}
                     />
+
                     <Controls.Input
-                        label="Style"
-                        name="style"
-                        type="text"
-                        value={values.style}
+                        label="Codigo Principal de Intertela"
+                        name="cod_intertela1"
+                        value={values.cod_intertela1}
                         onChange={handleInputChange}
-                        error={errors.style}
+                        options={cutsheetCalsaservices.getTipoIntertelaCollection()}
+                        error={errors.cod_intertela1}
                     />
-                </Grid>
-                <Grid item xs={6} >
-                    <Controls.Input
-                        label="Botao"
-                        name="butao"
-                        type="text"
-                        value={values.butao}
+                    <Controls.Select
+                        label="Codigo  Secundaria de Intertela"
+                        name="cod_intertela2"
+                        value={values.cod_intertela2}
                         onChange={handleInputChange}
-                        error={errors.butao}
+                        options={cutsheetCalsaservices.getTipoIntertelaCollection()}
+                        error={errors.cod_intertela2}
                     />
-                    <Controls.Input
-                        label="Empacotamento"
-                        name="empacotamento"
-                        type="text"
-                        value={values.empacotamento}
-                        onChange={handleInputChange}
-                        error={errors.empacotamento}
-                    />
-                    
-                    <Controls.Input
-                        label="Cor do Artigo"
-                        name="cor"
-                        type="text"
-                        value={values.cor}
-                        onChange={handleInputChange}
-                        error={errors.cor}
-                    />
-                </Grid>
-                <Grid item xs={6} >
+
                     <Controls.Input
                         label="Metragem Total de Intertela"
                         name="metragem_intertela"
@@ -236,22 +215,22 @@ export default function UserForm(props) {
                         onChange={handleInputChange}
                         error={errors.metragem_intertela}
                     />
-                    <Controls.Input
-                        label="Codigo Principal de Intertela"
-                        name="cod_intertela1"
-                        type="number"
-                        value={values.cod_intertela1}
+                    <Controls.Select
+                        label="Codigo Principal de Bolso"
+                        name="cod_bolso1"
+                        value={values.cod_bolso1}
                         onChange={handleInputChange}
-                        error={errors.cod_intertela1}
-                    />
-                    <Controls.Input
-                        label="Codigo Principal de Secundaria"
-                        name="cod_intertela2"
-                        type="number"
-                        value={values.cod_intertela2}
+                        options={cutsheetCalsaservices.getTipoBolsoCollection()}
+                        error={errors.cod_bolso1}
+                    /><Controls.Select
+                        label="Codigo Secundario de Bolso"
+                        name="cod_bolso2"
+                        value={values.cod_bolso2}
                         onChange={handleInputChange}
-                        error={errors.cod_intertela2}
+                        options={cutsheetCalsaservices.getTipoBolsoCollection()}
+                        error={errors.cod_bolso2}
                     />
+
                     <Controls.Input
                         label="Metragem Total de Bolso"
                         name="metragem_bolso"
@@ -260,40 +239,13 @@ export default function UserForm(props) {
                         onChange={handleInputChange}
                         error={errors.metragem_bolso}
                     />
-                    <Controls.Input
-                        label="Codigo Principal de Bolso"
-                        name="cod_bolso1"
-                        type="number"
-                        value={values.cod_bolso1}
-                        onChange={handleInputChange}
-                        error={errors.cod_bolso1}
-                    /><Controls.Input
-                        label="Codigo Secundario de Bolso"
-                        name="cod_bolso2"
-                        type="text"
-                        value={values.cod_bolso2}
-                        onChange={handleInputChange}
-                        error={errors.cod_bolso2}
-                    />
-
-                </Grid>
-
-
-
-
-
-
-
-
-                <Grid item xs={6} >
-
                     <div>
                         <Controls.Button
                             type="submit"
-                            text="Submit"
+                            text="Guarda"
                         />
                         <Controls.Button
-                            text="Reset"
+                            text="Limpar Campos"
                             color="default"
                             onClick={resetForm}
                         />

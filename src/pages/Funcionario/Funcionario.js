@@ -4,7 +4,7 @@ import PageHeader from '../../components/PageHeader'
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
 import useTable from '../../components/useTable'
-import PeopleOutlineTwoToneIcon from '@material-ui/icons/PeopleOutlineTwoTone';
+import PeopleOutlineTwoToneIcon from '@material-ui/icons/SupervisedUserCircleRounded';
 import { InputAdornment, InputLabel, makeStyles, Paper, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
 import Controls from '../../components/controls/Controls';
 import Popup from '../../components/Popup'
@@ -29,14 +29,12 @@ const useStyles = makeStyles(theme => ({
 }))
 const headersCells = [
     { id: 'pk_id_funcionario', label: 'ID' },
-    { id: 'nome_funcionario', label: 'Name' },
+    { id: 'nome_operario', label: 'Name' },
     { id: 'nr_bi', label: 'BI' },
     { id: 'genero', label: 'Genero' },
+    { id: 'codigo', label: 'Codigo' },
     { id: 'nome_bairro', label: 'City' },
-    { id: 'quarteirao_nr', label: 'Quarteirao' },
-    { id: 'casa_nr', label: 'Casa' },
-    { id: 'nr_telefone', label: 'Telefone' },    
-    { id: 'fk_id_linha', label: 'Nr Linha' },
+    { id: 'nr_telefone', label: 'Telefone' },
     { id: 'actions', label: 'Actions', desableSorting: true },
 ]
 export default function User() {
@@ -50,7 +48,7 @@ export default function User() {
 
     useEffect(() => {
         async function loadUsuarios() {
-            const res = await api.post('/funcionario/Listar_funcionario');
+            const res = await api.get('/operario/Listar_operario');
             setUsuarios(res.data)
         }
         loadUsuarios();
@@ -71,17 +69,17 @@ export default function User() {
         recordsAfterPagingAndSorting
     } = useTable(records?.length > 0 && records, headersCells, filtterFn)
 
-    const addOrEdit = (employees, resetForm) => {
-        
-        if (employees.id_pessoa > 0) {
-            funcionariosercices.updatePessoa(employees)
+    const addOrEdit = (funcionarios, resetForm) => {
+        if (funcionarios.pk_id_operario > 0) {
+            funcionariosercices.updateFuncionario(funcionarios)
         } else {
-            funcionariosercices.insertemployees(employees)
+            funcionariosercices.insertFuncionario(funcionarios)
+
         }
 
         resetForm(); //Limpa o formulario
         setopenPopup(false); // Fecha o Modal        
-        window.location.href = '/admin/usuario/pessoaMoztex'
+        window.location.href = '/admin/usuario/funcionarioMoztex'
     }
     const handleSearch = e => {
         let target = e.target;
@@ -91,7 +89,7 @@ export default function User() {
                     return items
                 }
                 else {
-                    return items.filter(x => x.nome.toLowerCase().includes(target.value))
+                    return items.filter(x => x.nome_operario.toLowerCase().includes(target.value))
                 }
             }
         })
@@ -117,7 +115,7 @@ export default function User() {
                     <Controls.Input
                         className={classes.SearchInput}
                         name="search"
-                        label="Search User"
+                        label="Buscar Operarios Pelo Nome"
                         InputProps={{
                             startAdornment: (<InputAdornment position="start">
                                 <SearchIcon />
@@ -129,7 +127,7 @@ export default function User() {
 
                     </Controls.Input>
                     <Controls.Button
-                        text="Add New"
+                        text="Adicinar Novo"
                         variant="outlined"
                         startIcon={<AddIcon />}
                         className={classes.newButton}
@@ -142,16 +140,14 @@ export default function User() {
                     <TableBody>
                         {
                             recordsAfterPagingAndSorting()?.map(item =>
-                            (<TableRow key={item.pk_id_funcionario}>
-                                <TableCell> {item.pk_id_funcionario} </TableCell>
-                                <TableCell> {item.nome_funcionario} </TableCell>
-                                <TableCell> {item.nr_bi} </TableCell>                                                               
+                            (<TableRow key={item.pk_id_operario}>
+                                <TableCell> {item.pk_id_operario} </TableCell>
+                                <TableCell> {item.nome_operario} </TableCell>
+                                <TableCell> {item.nr_bi} </TableCell>
                                 <TableCell> {item.genero} </TableCell>
+                                <TableCell> {item.nr_operario} </TableCell>
                                 <TableCell> {item.nome_bairro} </TableCell>
-                                <TableCell> {item.quarteirao_nr} </TableCell>
-                                <TableCell> {item.casa_nr} </TableCell>
-                                <TableCell> {item.nr_telefone} </TableCell>                                
-                                <TableCell> {item.fk_id_linha} </TableCell>
+                                <TableCell> {item.nr_telefone} </TableCell>
                                 <TableCell>
 
                                     <Controls.ActionButton
@@ -159,7 +155,7 @@ export default function User() {
                                     >
                                         <EditIcon fontSize="small"
                                             onClick={() => openInPopupEdit(item)}
-                                        />
+                                        />Editar
                                     </Controls.ActionButton>
                                     <Controls.ActionButton
                                         color="secondary"
@@ -167,7 +163,7 @@ export default function User() {
                                         <DeleteIcon
                                             fontSize="small"
                                             onClick={() => deleteUserByID(item)}
-                                        />
+                                        />Apagar
                                     </Controls.ActionButton>
 
                                 </TableCell>
@@ -179,7 +175,7 @@ export default function User() {
                 <TblPaginition />
             </Paper>
             <Popup
-                tittle="Users Form"
+                tittle="Formulario de Cadastro de Operarios"
                 openPopup={openPopup}
                 setOpenPopup={setopenPopup}
             >

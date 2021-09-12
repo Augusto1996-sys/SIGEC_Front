@@ -16,7 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import api from '../../../services/api';
 
-import {setIdUsuario, login, setNomeUsuario, setTipoUsuario,setUsuario} from '../../../services/auth'
+import {setIdUsuario, login, setNomeUsuario, setTipoUsuario,setUsuario, TUSER_Axn} from '../../../services/auth'
 
 function Copyright() {
   return (
@@ -33,7 +33,7 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   paper: {marginTop: theme.spacing(8),display: 'flex',flexDirection: 'column',alignItems: 'center',},
-  avatar: {margin: theme.spacing(1),backgroundColor: theme.palette.secondary.main,  },
+  //avatar: {margin: theme.spacing(1),backgroundColor: theme.palette.secondary.main,  },
   form: {width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),  },
   submit: {margin: theme.spacing(3, 0, 2),},}));
@@ -48,7 +48,7 @@ export default function SignIn() {
   
   async function handleSubmit(){
      
-    await api.post('/user/login_users/', {email_login,password_login})
+    await api.post('/usuario/login_users/', {email_login,password_login})
               .then(res =>{
                 console.log(res)
                 if(res.status == 200){
@@ -58,6 +58,7 @@ export default function SignIn() {
                         setNomeUsuario(res.data.email);
                         setTipoUsuario(res.data.fk_id_tipo_usuario)                        
                         setUsuario(res.data)
+                        
                         
                     window.location.href = '/admin'
                     }else if(email_login == ''||password_login == ''){
@@ -88,7 +89,7 @@ export default function SignIn() {
                    }}>
         <Avatar 
             alt='src'
-            variant='circle'
+            variant='zzzzzzzzzzzzzzzzz'
             style={{
                     width:'300px',
                    }}

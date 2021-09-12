@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import MenuAdmin from '../../components/menu-admin'
 import Footer from '../../components/footer-admin';
-import Recolha from './Recolha';
+import AlocarOperario from './Alocar_operario'
 
 
 
@@ -23,13 +23,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditarUsuario() {
-  const classes = useStyles();
-  const [email, setEmail] =useState('');
-  const [tipouser, setTipouser] =useState('');
-  const [password, setPassword] =useState('');
-  const [confpassword, setConfpassword] =useState('');   
-  const histry =  useHistory();
-    
+  const classes = useStyles(); 
+
   return (
     <div className={classes.root}> 
      
@@ -44,7 +39,9 @@ export default function EditarUsuario() {
                </Paper> 
                </Grid>
                </Grid>
-             <Recolha />  
+
+               <AlocarOperario />
+
           <Box pt={4}>
             <Footer />
           </Box>

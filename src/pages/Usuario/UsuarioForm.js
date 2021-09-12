@@ -1,51 +1,52 @@
 import { FormControl, FormControlLabel, FormLabel, Grid, Input, makeStyles, Radio, RadioGroup, TextField } from '@material-ui/core';
 import React, { useState, useEffect } from 'react'
-import { Link, useHistory } from 'react-router-dom';
 import { useForm, Form } from '../../components/useForm';
 import Controls from '../../components/controls/Controls'
-import * as usuarioservices from '../../services/usuarioservices'
-
+import * as recolhasercices from '../../services/recolhaservices'
+import * as usuariosercices from '../../services/usuarioservices'
 import logosistema from '../../assets/img/Rh.jpg'
 
-const typeChoice = [
-    { id: 'isRecolha', tittle: "Recolha" },
-    { id: 'isFielArmazem', tittle: "Fiel Armazem" },
-    { id: 'isCoordenador', tittle: "Coordenador" }
-]
-  
 
-const stateChoice = [
-    { id: 'enable', tittle: "Enable" },
-    { id: 'disable', tittle: "Disable" }
+const nivelItems = [
+    { id: "Admin", tittle: "Administrador" },
+    { id: "Spluser", tittle: "Usuario Simples" }
 ]
+
+const stateItems = [
+    { id: "enable", tittle: "Activo" },
+    { id: "disable", tittle: "Desativo" },
+]
+
 
 const initialFormValues = {
-
-    fk_id_funcionario: 0,
+    pk_id_usuarioc: 0,
+    fullname: '',
+    fk_id_funcionario: '',
     email: '',
     password: '',
-    isoque: 'isRecolha',
-    state: 'disable'
+    nivel: 'Admin',
+    state: 'disable',
+
 }
 
-export default function UserForm(props) {
+export default function UsuarioForm(props) {
     const { addOrEdit, recordForEdit } = props;
-
-    const histry = useHistory();
 
     const validate = (fieldvalues = values) => {
         //Validacao dos Campos de texto em tempo real
         let temp = { ...errors }
 
-
-        if ('nr_bi' in fieldvalues) {
-            temp.nr_bi = fieldvalues.nr_bi.length > 12 ? "" : "Minimun 12 number required"
+        if ('email' in fieldvalues) {
+            temp.email = (/$^|.+@+../).test(fieldvalues.email) ? "" : "Email Invalido.. ex: zzz@gmail.com"
         }
-        if ('password' in fieldvalues) {
-            temp.password = fieldvalues.password.length > 4 ? "" : "Minimun 4 number required"
+        else if ('fullname' in fieldvalues) {
+            temp.fullname = fieldvalues.fullname ? "" : "Preencha o campo do nome"
         }
-        if ('fk_id_tipo_usuario' in fieldvalues) {
-            temp.fk_id_tipo_usuario = fieldvalues.fk_id_tipo_usuario.length != 0 ? "" : "This Field is Required"
+        else if ('nivel' in fieldvalues) {
+            temp.nivel = fieldvalues.nivel ? "" : "Preencha o Nome"
+        }
+        else if ('password' in fieldvalues) {
+            temp.password = fieldvalues.password.length > 3 ? "" : "Minimo de 4 Caracteres Necessarios"
         }
         setErrors({
             ...temp
@@ -65,7 +66,6 @@ export default function UserForm(props) {
         resetForm
     } = useForm(initialFormValues, true, validate);
 
-
     const handleSubmit = e => {
         e.preventDefault()
         if (validate()) {
@@ -73,9 +73,6 @@ export default function UserForm(props) {
 
         }
     }
-
-
-
 
     useEffect(() => {
         if (recordForEdit != null) {
@@ -89,14 +86,13 @@ export default function UserForm(props) {
         <Form onSubmit={handleSubmit}>
             <Grid container>
                 <Grid item xs={6} >
-
-                    <Controls.Select
-                        name="fk_id_funcionario"
-                        label="Nome"
-                        value={values.fk_id_funcionario}
+                    <Controls.Input
+                        label="Nome Completo"
+                        name="fullname"
+                        type="text"
+                        value={values.fullname}
                         onChange={handleInputChange}
-                        options={usuarioservices.GetusuarioCollection()}
-                        error={errors.fk_id_funcionario}
+                        error={errors.fullname}
                     />
                     <Controls.Input
                         label="Email"
@@ -109,46 +105,18 @@ export default function UserForm(props) {
                     <Controls.Input
                         label="password"
                         name="password"
-                        type="password"
+                        type="text"
                         value={values.password}
                         onChange={handleInputChange}
                         error={errors.password}
                     />
-                </Grid>
-
-
-                <Grid item xs={6} >
-                    <Controls.RadioGroup
-                        name="isoque"
-                        label="Tipo Usuario"
-                        value={values.isoque}
-                        onChange={handleInputChange}
-                        items={typeChoice}
-
-                    />
-
-
-                    <Controls.RadioGroup
-                        name="state"
-                        label="Estado Usuario"
-                        value={values.state}
-                        onChange={handleInputChange}
-                        items={stateChoice}
-
-                    />
-
-                </Grid>
-
-
-                <Grid item xs={6} >
-
                     <div>
                         <Controls.Button
                             type="submit"
-                            text="Submit"
+                            text="Guardar"
                         />
                         <Controls.Button
-                            text="Reset"
+                            text="Limpar Campos"
                             color="default"
                             onClick={resetForm}
                         />
@@ -156,11 +124,28 @@ export default function UserForm(props) {
                     </div>
 
                 </Grid>
+                <Grid item xs={6} >
+                    <Controls.RadioGroup
+                        name="nivel"
+                        label="Tipo Usuario"
+                        value={values.nivel}
+                        onChange={handleInputChange}
+                        items={nivelItems}
+
+                    />
+
+                    <Controls.RadioGroup
+                        name="state"
+                        label="Estado Usuario"
+                        value={values.state}
+                        onChange={handleInputChange}
+                        items={stateItems}
+
+                    />
+                </Grid>
 
             </Grid>
 
         </Form>
     )
 }
-
-

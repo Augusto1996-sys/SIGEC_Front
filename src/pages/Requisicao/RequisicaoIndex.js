@@ -1,6 +1,4 @@
 import React, {useState, useEffect}from 'react';
-import {Link, useHistory, useParams } from 'react-router-dom';
-import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
@@ -8,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import MenuAdmin from '../../components/menu-admin'
 import Footer from '../../components/footer-admin';
-import Recolha from './Recolha';
+import Usuario from './Requisicao'
 
 
 
@@ -23,13 +21,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditarUsuario() {
-  const classes = useStyles();
-  const [email, setEmail] =useState('');
-  const [tipouser, setTipouser] =useState('');
-  const [password, setPassword] =useState('');
-  const [confpassword, setConfpassword] =useState('');   
-  const histry =  useHistory();
-    
+  const classes = useStyles(); 
+
   return (
     <div className={classes.root}> 
      
@@ -44,7 +37,9 @@ export default function EditarUsuario() {
                </Paper> 
                </Grid>
                </Grid>
-             <Recolha />  
+
+               <Usuario />
+
           <Box pt={4}>
             <Footer />
           </Box>

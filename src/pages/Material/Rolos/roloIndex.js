@@ -6,9 +6,11 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import MenuAdmin from '../../components/menu-admin'
-import Footer from '../../components/footer-admin';
-import Recolha from './Recolha';
+import MenuAdmin from '../../../components/menu-admin'
+import Footer from '../../../components/footer-admin';
+import Button from '@material-ui/core/Button';
+import api from '../../../services/api'
+import User from './Rolo'
 
 
 
@@ -23,13 +25,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditarUsuario() {
-  const classes = useStyles();
-  const [email, setEmail] =useState('');
-  const [tipouser, setTipouser] =useState('');
-  const [password, setPassword] =useState('');
-  const [confpassword, setConfpassword] =useState('');   
-  const histry =  useHistory();
-    
+  const classes = useStyles(); 
+
   return (
     <div className={classes.root}> 
      
@@ -44,7 +41,9 @@ export default function EditarUsuario() {
                </Paper> 
                </Grid>
                </Grid>
-             <Recolha />  
+
+               <User />
+
           <Box pt={4}>
             <Footer />
           </Box>

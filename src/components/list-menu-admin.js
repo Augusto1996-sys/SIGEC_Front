@@ -24,12 +24,6 @@ export const mainListItems = (
       <ListItemText primary="Dashboard" />
     </ListItem>
 
-    <ListItem button component="a" href="/admin/usuario/usuarioMoztex">
-      <ListItemIcon>
-        <UsersIcon />
-      </ListItemIcon>
-      <ListItemText primary="Usuarios" />
-    </ListItem>
 
     <ListItem button component="a" href="/admin/usuario/funcionarioMoztex">
       <ListItemIcon>
@@ -38,7 +32,28 @@ export const mainListItems = (
       <ListItemText primary="Funcionario" />
     </ListItem>
 
-    
+    <ListItem button component="a" href="/admin/usuario/usuarioMoztex">
+      <ListItemIcon>
+        <UsersIcon />
+      </ListItemIcon>
+      <ListItemText primary="Usuarios" />
+    </ListItem>
+
+    <ListItem button component="a" href="/admin/usuario/alocar_operarioIndex">
+      <ListItemIcon>
+        <UsersIcon />
+      </ListItemIcon>
+      <ListItemText primary="Alocar Linha" />
+    </ListItem>
+
+
+    <ListItem button component="a" href="/admin/usuario/materialIndex">
+      <ListItemIcon>
+        <ShoppingCartIcon />
+      </ListItemIcon>
+      <ListItemText primary="Material" />
+    </ListItem>
+
     <ListItem button component="a" href="/admin/usuario/cutsheetMoztex">
       <ListItemIcon>
         <ShoppingCartIcon />
@@ -46,20 +61,20 @@ export const mainListItems = (
       <ListItemText primary="Cutsheet" />
     </ListItem>
 
-    <ListItem button component="a" href="/admin/aluno">
+    <ListItem button component="a" href="/admin/usuario/requisicaoindex">
       <ListItemIcon>
         <BarChartIcon />
       </ListItemIcon>
       <ListItemText primary="Request" />
     </ListItem>
 
-    <ListItem button >
+    <ListItem button component="a" href="/admin/usuario/moztex">
       <ListItemIcon>
-        <PeopleIcon />
+        <BarChartIcon />
       </ListItemIcon>
-
-      <ListItemText primary="Received" />
+      <ListItemText primary="Requisitar" />
     </ListItem>
+
   </div>
 );
 

@@ -8,8 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import MenuAdmin from '../../components/menu-admin'
 import Footer from '../../components/footer-admin';
-import Recolha from './Recolha';
-
+import CutsheetCalsas from './CutsheetCalsa'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -22,14 +21,9 @@ const useStyles = makeStyles((theme) => ({
   formControl:{width:'100%'}
 }));
 
-export default function EditarUsuario() {
-  const classes = useStyles();
-  const [email, setEmail] =useState('');
-  const [tipouser, setTipouser] =useState('');
-  const [password, setPassword] =useState('');
-  const [confpassword, setConfpassword] =useState('');   
-  const histry =  useHistory();
-    
+export default function IndexCutsshet() {
+  const classes = useStyles(); 
+
   return (
     <div className={classes.root}> 
      
@@ -44,7 +38,9 @@ export default function EditarUsuario() {
                </Paper> 
                </Grid>
                </Grid>
-             <Recolha />  
+
+               <CutsheetCalsas />
+
           <Box pt={4}>
             <Footer />
           </Box>

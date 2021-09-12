@@ -67,20 +67,4 @@ export async function updateEmployees(data){
             }
                 }
 
-export function generateEmployeesId(){
-    if(localStorage.getItem(KEYS.employeesId) == null){
-        localStorage.setItem(KEYS.employeesId,  '0')
-    }
-    var id = parseInt(localStorage.getItem(KEYS.employeesId))
-    localStorage.setItem(KEYS.employeesId, (++id).toString())
-    return id;
-}
-
-export function getAllEmployees(){ 
-    if(localStorage.getItem(KEYS.users) == null){
-        localStorage.setItem(KEYS.users, JSON.stringify([]))
-    }else 
-    return JSON.parse(localStorage.getItem(KEYS.users))
-
   
-}  

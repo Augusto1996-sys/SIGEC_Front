@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import UsuarioForm from './UsuarioForm';
-import PageHeader from '../../components/PageHeader'
+import RoloForm from './RoloForm';
+import PageHeader from '../../../components/PageHeader'
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
-import useTable from '../../components/useTable'
-import PeopleOutlineTwoToneIcon from '@material-ui/icons/PeopleOutlineTwoTone';
+import useTable from '../../../components/useTable'
+import PeopleOutlineTwoToneIcon from '@material-ui/icons/CameraRoll';
 import { InputAdornment, InputLabel, makeStyles, Paper, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
-import Controls from '../../components/controls/Controls';
-import Popup from '../../components/Popup'
-import api from '../../services/api';
-import * as usuariosercices from '../../services/usuarioservices'
+import Controls from '../../../components/controls/Controls';
+import Popup from '../../../components/Popup'
+import api from '../../../services/api';
+import * as rolosercices from '../../../services/roloservices'
 import DeleteIcon from '@material-ui/icons/DeleteSharp';
 import EditIcon from '@material-ui/icons/Edit';
 
@@ -28,11 +28,15 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 const headersCells = [
-    { id: 'pk_id_usuarioc', label: 'ID' },     
-    { id: 'fullname', label: 'Name' },   
-    { id: 'email', label: 'Email' },
-    { id: 'nivel', label: 'User Type' },
-    { id: 'state', label: 'State' },
+    { id: 'pk_id_material', label: 'ID' },
+    { id: 'fk_id_referencia', label: 'Reference' },
+    { id: 'codigo_cutsheet', label: 'Cutsheet' },
+    { id: 'nome', label: 'Name' },
+    { id: 'cor_material', label: 'Color' },
+    { id: 'metragem', label: 'Metcion' },
+    { id: 'bale_number', label: 'Bale Number' },
+    { id: 'shade', label: 'Shade' },
+    { id: 'created_at_material', label: 'Data' },
     { id: 'actions', label: 'Actions', desableSorting: true },
 ]
 export default function User() {
@@ -46,7 +50,7 @@ export default function User() {
 
     useEffect(() => {
         async function loadUsuarios() {
-            const res = await api.get('/usuario/listar_usuario');
+            const res = await api.get('/rolo/listar_rolo');
             setUsuarios(res.data)
         }
         loadUsuarios();
@@ -67,19 +71,17 @@ export default function User() {
         recordsAfterPagingAndSorting
     } = useTable(records?.length > 0 && records, headersCells, filtterFn)
 
-    const addOrEdit = (usuario, resetForm) => {
-
-        if (usuario.pk_id_usuarioc > 0) {
-
-            usuariosercices.updateusuario(usuario)
-
+    const addOrEdit = (rolos, resetForm) => {
+        if (rolos.pk_id_material > 0) {
+            rolosercices.updaterolo(rolos)
         } else {
+            rolosercices.insertrolo(rolos)
 
-            usuariosercices.insertusuario(usuario)
         }
+
         resetForm(); //Limpa o formulario
         setopenPopup(false); // Fecha o Modal        
-        window.location.href = '/admin/usuario/usuarioMoztex'
+        window.location.href = '/admin/usuario/roloIndex'
     }
     const handleSearch = e => {
         let target = e.target;
@@ -89,7 +91,7 @@ export default function User() {
                     return items
                 }
                 else {
-                    return items.filter(x => x.fullname.toLowerCase().includes(target.value))
+                    return items.filter(x => x.refencia.toLowerCase().includes(target.value))
                 }
             }
         })
@@ -99,23 +101,29 @@ export default function User() {
         setopenPopup(true);
     }
 
+    function getDta(params){
+        const d = new Date(params)
+        const mes = 1+d.getMonth(); 
+         return(d.getDate()+"/"+mes+"/"+d.getFullYear())
+     }
+
     const deleteUserByID = id => { //Responsavel por Passar o ID a ser deletados
-        usuariosercices.deleteUser(id)
+        rolosercices.deleteUser(id)
     }
     return (
         <>
             <PageHeader
-                tittle="Usuario MOZETEX"
-                subtittle="Formulario com Validacao, para a adicao de novas Usuarios do Sistema. Pode Procurar os Funcionarios pelos seus Nomes com letras minusculas"
+                tittle="Rolls MOZETEX"
+                subtittle="Formulario com Validacao! Registro de Rolos {Bolso, Tecido e Intertela}, para a adicao de novos Rolos Pode fazer a buscar dos Rolos pela refrencia"
                 icon={<PeopleOutlineTwoToneIcon fontSize="large" />}
             />
             <Paper className={classes.pageContent}>
-                {/*<UsuarioForm    />*/}
+                {/*<roloForm    />*/}
                 <Toolbar>
                     <Controls.Input
                         className={classes.SearchInput}
                         name="search"
-                        label="Buscar Usuarios pelo Nome"
+                        label="Search User"
                         InputProps={{
                             startAdornment: (<InputAdornment position="start">
                                 <SearchIcon />
@@ -127,7 +135,7 @@ export default function User() {
 
                     </Controls.Input>
                     <Controls.Button
-                        text="Adicinar Novo"
+                        text="Novo Rolo"
                         variant="outlined"
                         startIcon={<AddIcon />}
                         className={classes.newButton}
@@ -140,12 +148,16 @@ export default function User() {
                     <TableBody>
                         {
                             recordsAfterPagingAndSorting()?.map(item =>
-                            (<TableRow key={item.pk_id_usuarioc}>
-                                <TableCell> {item.pk_id_usuarioc} </TableCell>
-                                <TableCell> {item.fullname} </TableCell>                                
-                                <TableCell> {item.email} </TableCell>
-                                <TableCell> {item.nivel} </TableCell>
-                                <TableCell> {item.state} </TableCell>
+                            (<TableRow key={item.pk_id_material}>
+                                <TableCell> {item.pk_id_material} </TableCell>                                
+                                <TableCell> {item.refencia} </TableCell>
+                                <TableCell> {item.codigo_cutsheet} </TableCell>
+                                <TableCell> {item.nome} </TableCell>
+                                <TableCell> {item.cor_material} </TableCell>
+                                <TableCell> {item.metragem} </TableCell>
+                                <TableCell> {item.bale_number} </TableCell>
+                                <TableCell> {item.shade} </TableCell>
+                                <TableCell> {getDta(item.created_at_material)} </TableCell>
                                 <TableCell>
 
                                     <Controls.ActionButton
@@ -153,7 +165,7 @@ export default function User() {
                                     >
                                         <EditIcon fontSize="small"
                                             onClick={() => openInPopupEdit(item)}
-                                        />Editar
+                                        />
                                     </Controls.ActionButton>
                                     <Controls.ActionButton
                                         color="secondary"
@@ -161,7 +173,7 @@ export default function User() {
                                         <DeleteIcon
                                             fontSize="small"
                                             onClick={() => deleteUserByID(item)}
-                                        />Apagar
+                                        />
                                     </Controls.ActionButton>
 
                                 </TableCell>
@@ -173,15 +185,14 @@ export default function User() {
                 <TblPaginition />
             </Paper>
             <Popup
-                tittle="Formulario de Cadastro de Usarios"
+                tittle="Rolo Form"
                 openPopup={openPopup}
                 setOpenPopup={setopenPopup}
             >
-                <UsuarioForm
+                <RoloForm
                     recordForEdit={recordForEdit}
                     addOrEdit={addOrEdit} />
             </Popup>
         </>
     )
-
 }

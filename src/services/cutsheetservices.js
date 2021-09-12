@@ -1,11 +1,21 @@
+import React, { useEffect, useState } from 'react'
 import api from './api'
+
 
 
 const KEYS = {
   users: "users",
   employeesId: "employeesId"
 }
-
+export const getTipoPecaCollection = () => (
+  [
+    { id: '1', tittle: "School Shet" },
+    { id: '2', tittle: "School Trouser" },
+    { id: '3', tittle: "Fashion Shet" },
+    { id: '4', tittle: "Elastic Trouser" },
+    { id: '5', tittle: "Glad Neack Sheat" }
+  ]
+)
 export async function insertemployees(data) {
 
   const data1 = {
@@ -28,10 +38,58 @@ export async function insertemployees(data) {
       alert(`Erro ao Cadastrar Usuario`);
     }
   } catch (error) {
-    alert(`Erro de Cadastrar `+error);
+    alert(`Erro de Cadastrar ` + error);
   }
 }
 
+
+export function GetcutsheetCollection() {
+  const [cutsheet, setcutsheet] = useState([]); //vindo da BD 
+  useEffect(() => {
+    async function loadcutsheet() {
+      const res = await api.post('cutsheet/listar_cutsheet');
+      setcutsheet(res.data)
+    }
+    loadcutsheet();
+  }, [])
+  //alert(cutsheet)
+  if (!cutsheet) {
+    return (
+      cutsheet.map(item => (
+        { "id": item.pk_id_cutsheet, "tittle": item.codigo_cutsheet }
+      ))
+
+    )
+  }
+
+
+
+}
+
+export function GetRecolhaByCutsheCollection(fk_id_cutsheet) {
+  const [cutsheet, setcutsheet] = useState([]); //vindo da BD 
+  useEffect(() => {
+    async function loadcutsheet() {
+      const res = await api.post('cutsheet/listar_cutsheetByRecoha', fk_id_cutsheet);
+      setcutsheet(res.data)
+      console.log(res)
+    }
+    loadcutsheet();
+  }, [])
+
+
+  if (!cutsheet) {
+    return (
+      cutsheet.map(item => (
+        { "id": item.pk_id_cutsheet, "tittle": item.codigo_cutsheet }
+      ))
+
+    )
+  }
+
+
+
+}
 
 export async function updatecutsheet(data) {
   const data1 = {
@@ -79,20 +137,46 @@ export async function deleteUser(item) {
   }
 }
 
-export function generateEmployeesId() {
-  if (localStorage.getItem(KEYS.employeesId) == null) {
-    localStorage.setItem(KEYS.employeesId, '0')
+
+export function GetCutsheByFkCsCollection(pk_id_cutsheet) {
+  const [codigo, setcodigo] = useState([]);
+  alert("PK_id_stock:" + pk_id_cutsheet)
+  let codigo1
+  let res = api.post('cutsheet/listar_cutsheetByID', { pk_id_cutsheet }).then(res => {
+
+    codigo1 = res.data.codigo_cutsheet
+    codigo = codigo1
+    setcodigo(codigo1)
+  });
+  if (!codigo) {
+    return codigo
   }
-  var id = parseInt(localStorage.getItem(KEYS.employeesId))
-  localStorage.setItem(KEYS.employeesId, (++id).toString())
-  return id;
+
 }
 
-export function getAllEmployees() {
-  if (localStorage.getItem(KEYS.users) == null) {
-    localStorage.setItem(KEYS.users, JSON.stringify([]))
-  } else
-    return JSON.parse(localStorage.getItem(KEYS.users))
+
+export function GetAllEmployees() {
+  const [cutsheet, setcutsheet] = useState([]); //vindo da BD 
+  useEffect(() => {
+    async function loadcutsheet() {
+      const res = await api.post('cutsheet/listar_cutsheet');
+      setcutsheet(res.data)
+      console.log(res)
+    }
+    loadcutsheet();
+  }, [])
+  //alert(cutsheet)
+  if (!cutsheet) {
+    return (
+      cutsheet.map(item => (
+        cutsheet
+      ))
+
+    )
+  }
+
+
+
 
 
 }

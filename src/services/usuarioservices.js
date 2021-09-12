@@ -1,30 +1,52 @@
-import React, {useEffect, useState} from'react'
+import React, { useEffect, useState } from 'react'
 import api from './api'
 
 const KEYS = {
   users: "users",
   usuarioId: "usuarioId"
 }
-export  function GetusuarioCollection() {
+
+export function GetcutsheetCollection() {
+  const [cutsheet, setcutsheet] = useState([]); //vindo da BD 
+
+  useEffect(() => {
+    async function loadcutsheet() {
+      const res = await api.get('cutsheet/listar_cutsheet');
+      setcutsheet(res.data)
+
+      console.log(res)
+    }
+    loadcutsheet();
+  }, [])
+  return (
+
+    cutsheet.map(item => (
+      { "id": item.pk_id_cutsheet, "tittle": item.codigo_cutsheet }
+    ))
+
+  )
+
+}
+export function GetusuarioCollection() {
   const [usuario, setusuario] = useState([]); //vindo da BD 
 
   useEffect(() => {
     async function loadusuario() {
-        const res = await api.post('funcionario/Listar_funcionario');
-        setusuario(res.data)
+      const res = await api.get('operario/Listar_operario');
+      setusuario(res.data)
+
     }
     loadusuario();
-}, [])
-
+  }, [])
   return (
-   
-      usuario.map(item =>(
-        { "id": item.pk_id_funcionario, "tittle": item.nome_funcionario}
-      ))
-    
+
+    usuario.map(item => (
+      { "id": item.pk_id_operario , "tittle": item.nome_operario }
+    ))
+
   )
-  
-} 
+
+}
 
 export const getNrLinhaCollection = () => (
   [
@@ -41,72 +63,68 @@ export const getNrLinhaCollection = () => (
   ]
 )
 
-export const getSectorCollection = () => (
-  [
-    { id: '1', tittle: "Producao" },
-    { id: '2', tittle: "Colagem" },
-    { id: '3', tittle: "Corte" },
-    { id: '4', tittle: "Armazem" },
-    { id: '5', tittle: "Acabamento" }
-  ]
-)
+
 
 
 export async function insertusuario(data) {
-
   const data1 = {
-    pk_id_usuario: data.pk_id_usuario,
+    fullname: data.fullname,
     email: data.email,
     password: data.password,
-    isoque: data.isoque,
+    nivel: data.nivel,
     state: data.state
   }
-  try {
-    const response = await api.post('/usuario/create', data1);
 
-    if (response.status == 200) {
-      alert('usuario ' + data1.email + ' Registrado com sucesso');
-    } else if (response.status == 400) {
-      alert(`Erro ao Cadastrar usuario`);
+  try {
+    const response = await api.post('usuario/create', data1);
+  
+      if (response.status == 200) {
+        alert('Excluido Com Sucesso ')
+        window.location.href = '/admin/usuario/usuarioMoztex'
+      } else if (response.status != 200) {
+        alert('Usuario NAo Excluido')
+      }
+    } catch (error) {
+      alert('Erro Ao Excluir ' + error)
     }
-  } catch (error) {
-    alert(`Erro de Cadastrar ` + error);
-  }
+
 }
 
 
 export async function updateusuario(data) {
+
   const data1 = {
-    pk_id_usuario: data.pk_id_usuario,
+    pk_id_usuarioc: data.pk_id_usuarioc,
+    fullname: data.fullname,
     email: data.email,
     password: data.password,
-    isoque: data.isoque,
+    nivel: data.nivel,
     state: data.state
   }
   try {
     const response = await api.post('usuario/editarusuarioByID', data1);
     if (response.status == 200) {
-
       alert(`Dados Actualizados Com Sucesso`);
     } else if (response.status != 200) {
-      alert(`Erro ao Actualizar  Usuario`);
+      alert(`Dados Actualizados Nao Cadastrados`);
     }
   } catch (error) {
-    alert(`Erro na Actualizacao ` + error);
+    alert(`Erro ao Actualizados`);
   }
+
 }
 
 
 export async function deleteUser(item) {
-  if (window.confirm("Deseja Realmente Excluir " + item.nome + "? ")) {
+  if (window.confirm("Deseja Realmente Excluir " + item.fullname + "? ")) {
     try {
-      const result = await api.post('/usuario/deleteusuarioByID/' + item.pk_id_usuario);
-      if (result.status == 204) {
-        alert('Excluido Com Sucesso')
-        console.log(result)
+      const result = await api.post('/usuario/deleteusuarioByID/' + item.pk_id_usuarioc);
+
+      if (result.status == 200) {
+        alert('Excluido Com Sucesso ')
         window.location.href = '/admin/usuario/usuarioMoztex'
-      } else if (result.status != 204) {
-        alert('Ocorreu Um Erro')
+      } else if (result.status != 200) {
+        alert('Usuario NAo Excluido')
       }
     } catch (error) {
       alert('Erro Ao Excluir ' + error)
@@ -125,7 +143,7 @@ export function generateusuarioId() {
   return id;
 }
 
- export async function getAllusuario() {
+export async function getAllusuario() {
 
 
 

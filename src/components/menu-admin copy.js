@@ -140,12 +140,42 @@ export default function MenuAdmin({title}){
             <Toolbar>
                         
                 <Grid container alignItems="center">
+                    <Grid item >
+                        <InputBase style={{left:'0px'}}
+                        placeholder="Search Topic"
+                        className={classes.searchInput}
+                        value={getNomeUsuario}
+                        startAdornment={
+                            <SearchIcon fontSize="small"/>
+                        }
+                        />
+                    </Grid>
                     <Grid item sm>
                     </Grid>
                     <Grid item >
-                        <IconButton>
+                        <IconButton > 
+                            <Badge badgeContent={4} color="secondary">
+                                <NotificationsNoneIcon fontSize="small"/>
+                            </Badge>
+                        </IconButton >
+
+                        <IconButton >
+                            <Badge badgeContent={3} color="secondary">                                    
+                                <ChatBubbleOutlineIcon fontSize="small"/> 
+                            </Badge>                     
                         </IconButton>
-                        {"Bem Vindo ao Sistema"+" "+getNomeUsuario()}
+
+                        <IconButton onClick={confirmLogout}>
+                        <PowerSettingsNewIcon fontSize="small"/>
+                        </IconButton>
+                        <IconButton>
+                        <Avatar 
+                            alt='src'
+                            variant='circular'
+                            src={logosistema}>
+                        </Avatar>
+                        </IconButton>
+                        {getNomeUsuario()}
                         
                     </Grid>
 

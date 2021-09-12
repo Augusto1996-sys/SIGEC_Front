@@ -3,28 +3,9 @@ import React, { useState, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom';
 import { useForm, Form } from '../../components/useForm';
 import Controls from '../../components/controls/Controls'
-
+import * as  funcionarioservices from '../../services/funcionarioservices'
 import logosistema from '../../assets/img/Rh.jpg'
-export const getNrLinhaCollection = () => (
-    [
 
-        { id: '14', tittle: "Armazem" },
-        { id: '11', tittle: "Colagem" },
-        { id: '12', tittle: "Corte" },
-        { id: '13', tittle: "Acabamento" },
-        { id: '1', tittle: "Linha 1" },
-        { id: '2', tittle: "Linha 2" },
-        { id: '3', tittle: "Linha 3" },
-        { id: '4', tittle: "Linha 4" },
-        { id: '5', tittle: "Linha 5" },
-        { id: '6', tittle: "Linha 6" },
-        { id: '7', tittle: "Linha 7" },
-        { id: '8', tittle: "Linha 8" },
-        { id: '9', tittle: "Linha 9" },
-        { id: '10', tittle: "Linha 10" },
-
-    ]
-)
 
 const stateChoice = [
     { id: "masculino", tittle: "Masculino" },
@@ -33,19 +14,17 @@ const stateChoice = [
 ]
 
 const initialFormValues = {
-    pk_id_funcionario: 0,
-    fk_id_linha: '',
-    nome_funcionario: '',
+    pk_id_operario: 0,
+    nome_operario: '',    
+    nr_bi: '',          
+    nr_nui: '',     
+    nome_bairro: '',    
+    quarteirao_nr: '',    
+    data_nascimento: new Date(),
     genero: 'masculino',
-    fk_id_linha:'',
-    nr_bi: '',
-    nr_nui: '',
-    nome_bairro: '',
-    quarteirao_nr: '',
     casa_nr: '',
     nr_telefone: '',
-    nr_funcionario: '',
-    data_nascimento: new Date()
+    nr_operario:''
 
 }
 
@@ -113,17 +92,11 @@ export default function UserForm(props) {
 
                     <Controls.Input
                         label="Nome"
-                        name="nome_funcionario"
+                        name="nome_operario"
                         type="text"
-                        value={values.nome_funcionario}
+                        value={values.nome_operario}
                         onChange={handleInputChange}
-                        error={errors.nome_funcionario}
-                    />
-                    <Controls.DatePicker
-                        name="data_nascimento"
-                        label="Data de Nascimento"
-                        value={values.isPermanent}
-                        onChange={handleInputChange}
+                        error={errors.nome_operario}
                     />
                     <Controls.Input
                         label="BI"
@@ -163,22 +136,13 @@ export default function UserForm(props) {
 
 
                 <Grid item xs={6} >
-
-                    <Controls.Select
-                        name="fk_id_linha"
-                        label="Sector"
-                        value={values.fk_id_linha}
-                        onChange={handleInputChange}
-                        options={getNrLinhaCollection()}
-                        error={errors.fk_id_linha}
-                    />
                     <Controls.Input
-                        label="Numero Funcionario"
-                        name="nr_funcionario"
+                        label="Codigo Operario"
+                        name="nr_operario"
                         type="number"
-                        value={values.nr_funcionario}
+                        value={values.nr_operario}
                         onChange={handleInputChange}
-                        error={errors.nr_funcionario}
+                        error={errors.nr_operario}
                     />
 
                     <Controls.Input
@@ -216,10 +180,10 @@ export default function UserForm(props) {
                     <div>
                         <Controls.Button
                             type="submit"
-                            text="Submit"
+                            text="Gravar"
                         />
                         <Controls.Button
-                            text="Reset"
+                            text="Limpar Campos"
                             color="default"
                             onClick={resetForm}
                         />

@@ -11,13 +11,19 @@ import UsuarioEditrar from './pages/admin/usuarios/usuario.editar';
 import UsuarioCadastrar from './pages/admin/usuarios/usuario.cadastrar';
 import moztex from './pages/Recolha/moztex';
 import userMoztex from './pages/User/userIndex';
+import materialIndex from './pages/Material/materialIndex'
+
+import materialIndex1 from './pages/Material/Acessorios1/materialIndex1'
+import requisicaoindex from './pages/Requisicao/RequisicaoIndex'
+import roloIndex from './pages/Material/Rolos/roloIndex'
 
 import cutsheetMoztex from './pages/Cutsheet/cutsheetIndex';
 import usuarioMoztex from './pages/Usuario/usuarioIndex'
-import funcionarioMoztex from './pages/Funcionario/funcionarioIndex'
-
+import cutsheetCalsamoztex from './pages/CutsheetCalsa/cutsheetCalsaIndex'
+import cutsheetCamisamoztex from './pages/CutsheetCamisas/cutsheetCamisaIndex'
+import funcionarioMoztex from './pages/Funcionario/funcionarioIndex'  
+import alocar_operarioIndex from './pages/Alocar_Operario/alocar_operarioIndex'
 import AlunoDetails from './pages/client/alunos/alunos.details';
-
 import PrivateRoute from './services/wAuth'
 
 export default function Routes() {
@@ -37,17 +43,31 @@ export default function Routes() {
                 <PrivateRoute path="/admin/aluno/editar/:idaluno" exact component={AlunoEditrar} />
                 
 
-                <Route path="/admin/usuario" exact component={Usuario} />
+                <PrivateRoute path="/admin/usuario" exact component={Usuario} />
+                <Route path="/admin/usuario/cutsheetCalsamoztex" exact component={cutsheetCalsamoztex} />
+                <Route path="/admin/usuario/cutsheetCamisamoztex" exact component={cutsheetCamisamoztex} />
                 <Route path="/admin/usuario/moztex" exact component={moztex} />
                 <Route path="/admin/usuario/userMoztex" exact component={userMoztex} />
                 <Route path="/admin/usuario/usuarioMoztex" exact component={usuarioMoztex} />
+                <Route path="/admin/usuario/materialIndex" exact component={materialIndex} />
+                              
+                <Route path="/admin/usuario/roloIndex" exact component={roloIndex} />
+                <Route path="/admin/usuario/requisicaoindex" exact component={requisicaoindex} />
+                <Route path="/admin/usuario/materialIndex1" exact component={materialIndex1} />
+                
                 <Route path="/admin/usuario/funcionarioMoztex" exact component={funcionarioMoztex} />
                 <Route path="/admin/usuario/cutsheetMoztex" exact component={cutsheetMoztex} />
-                <Route path="/admin/usuario/cadastrar" exact component={UsuarioCadastrar} />
-                <PrivateRoute path="/admin/usuario/editar/:idUsuario" exact component={UsuarioEditrar} />
+                
+                
+                <Route path="/admin/usuario/cadastrar" exact component={UsuarioCadastrar} /> 
+                
+                <Route path="/admin/usuario/alocar_operarioIndex" exact component={alocar_operarioIndex} /> 
+                <Route path="/admin/usuario/editar/:idUsuario" exact component={UsuarioEditrar} />
+                
 
             </Switch>
 
         </BrowserRouter>
     )
 }
+
